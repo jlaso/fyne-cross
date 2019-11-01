@@ -69,6 +69,8 @@ var (
 	printVersion bool
 	// noStripDebug if true will not strip debug information from binaries
 	noStripDebug bool
+	// mapHomeDir if true will map ~/.fyne-cross to /home/fyne
+	mapHomeDir bool
 )
 
 // builder is the command implementing the fyne app command interface
@@ -84,6 +86,7 @@ func (b *builder) addFlags() {
 	flag.StringVar(&ldflags, "ldflags", "", "Flags to pass to the external linker")
 	flag.BoolVar(&noStripDebug, "no-strip", false, "If set will not strip debug information from binaries")
 	flag.BoolVar(&printVersion, "version", false, "Print fyne-cross version")
+	flag.BoolVar(&mapHomeDir, "home", false, "Maps /home/fyne from host ~/.fyne-cross, useful to deal with private repos")
 }
 
 func (b *builder) printHelp(indent string) {
@@ -312,6 +315,14 @@ func (d *dockerBuilder) defaultArgs() []string {
 
 	// mount the cache user dir. Used to cache package dependencies (GOROOT/pkg and GOROOT/src)
 	args = append(args, "-v", fmt.Sprintf("%s:/go", d.goPath))
+
+	if mapHomeDir {
+		usr, err := user.Current()
+		if err == nil {
+			// mount the home fyne folder to have access to .ssh and .gitignore
+			args = append(args, "-v", fmt.Sprintf("%s/.fyne-cross:/home/fyne", usr.HomeDir))
+		}
+	}
 
 	// attempt to set fyne user id as current user id to handle mount permissions
 	// on linux and MacOS

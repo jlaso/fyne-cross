@@ -31,6 +31,28 @@ Supported targets are:
 To install a preview of the next version or help in testing:
 
         go get github.com/lucor/fyne-cross@develop
+        
+if you make changes in the code this will build the command:
+
+        go build -o $GOPATH/bin/fyne-cross *.go
+        
+## Pre-requirement if you use/import private repos
+
+Create a folder `.fyne-cross` in your home directory, it will be mapped into the docker machines as /home/fyne
+so you can create on it a `.gitconfig` file with these contents (ex.gitlab)
+        
+```
+[user]
+    name = Write here your name
+    email = Write here your email
+[url "git@gitlab.com:"]
+    insteadOf = https://gitlab.com/
+```
+
+also you can create a `.ssh` folder and copy over it your `~/.id_rsa.pub` or whatever indentity file 
+you use to deal with your private repo
+
+in order to map this folder you should use --home when invoke fyne-cross
 
 ## Usage
 
